@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Client Verify</title>
+
+		<link href="{% static 'ClientVerificationApp/css/bootstrap.css' %}" rel="stylesheet">
+		<link href="{% static 'ClientVerificationApp/css/datepicker.css' %}" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+    body {
+        padding-top: 70px;
+        /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    }
+    </style>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Client Verification</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+					<li>
+                        <a href="#">Clients</a>
+                    </li>
+                    <li>
+                        <a href="#">Reminders</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <!-- Page Content -->
+    <div class="container">
+        <div class="row">
+			<div class="col-lg-8">
+				<h3><span class="label label-primary">Client Search</span></h3>
+			</div>
+			<form method="post" action="/clientverificationapp/getclient">
+			{% csrf_token %}
+            <div class="col-lg-4">
+				<div class="input-group">
+					<input type="text" name="txtAccountId" class="form-control" placeholder="Search by Account Id...">
+					<span class="input-group-btn">
+						<button class="btn btn-success" type="submit" id="searchClientBtn"><span class="glyphicon glyphicon-search"></span></button>
+					</span>
+				</div><!-- /input-group -->
+			</div>
+			</form>
+        </div>
+        <!-- /.row -->
+		<!-- row -->
+		{%if loadblank == 'Y'%}
+		{%else%}
+		<form method="post" action="/clientverificationapp/saveClientResponse">
+		<div class="row">&nbsp;</div>
+		{%if client%}
+		<input type="hidden" id="hdnAccountId" value="{{client.accountid}}"></input>
+		<div class="row" id="clientDetailSection" style="display:none;">
+			<div id="clientdata" class="col-lg-12 text-center">
+				<table class="table table-bordered bg-success">
+					<tr>
+						<td colspan="3"><h3><span class="label label-success">Account Id :: {{client.accountid}}</span></h3></td>
+						<td colspan="3"><h3><span class="label label-success">Account Name :: {{client.accountname}}</span></h3></td>
+					</tr>
+					<tr>
+						<td><b>Live Date</b></td>
+						<td>{{client.livedate}}</td>
+						<td><b>Domain Name</b></td>
+						<td><a href="http://www.google.com" target="_blank" id="website">{{client.domainname}}</a></td>
+						<td><b>Email Id</b></td>
+						<td>{{client.emailid}}</td>
+					</tr>
+					<tr>
+						<td><b>Contact Name</b></td>
+						<td>{{client.contactname}}</td>
+						<td><b>Phone</b></td>
+						<td>{{client.phone}}</td>
+						<td><b>VISA ACC TDR</b></td>
+						<td>{{client.visacctdr}}</td>
+					</tr>
+					<tr>
+						<td><b>MASTER CARD CC TDR</b></td>
+						<td>{{client.mastercardcctdr}}</td>
+						<td><b>Net Banking TDR</b></td>
+						<td>{{client.netbankingtdr}}</td>
+						<td><b>Debit Card TDR</b></td>
+						<td>{{client.debitcardtdr}}</td>
+					</tr>
+					<tr>
+						<td><b>Cash Card TDR</b></td>
+						<td>{{client.cashcardtdr}}</td>
+						<td><b>Create Date</b></td>
+						<td>{{client.createdate}}</td>
+						<td><b>Update Date</b></td>
+						<td>{{client.updatedate}}</td>
+					</tr>
+				</table>
+			</div>
+        </div>
+		{% else %}
+			<div class="row">No client with id {{client.accountid}}</div>
+		{% endif %}	
+		<div class="row">&nbsp;</div>
+		
+		<div class="row" id="responseSection" style="display:none;">
+			<div class="text-center">
+			  <h3><span class="label label-default">Client Response</span></h3>
+			</div>		
+			<div id="clientResponse" class="table-responsive col-lg-12 text-center">
+				<table class="table table-bordered bg-warning">
+					<tr>
+						<td><b>Website Operational?</b></td>
+						<td class="text-center">
+							<input name="websiteOperational" id="websiteOperationalYes" value="Y" type="radio" aria-label="Yes">&nbsp;Yes</input>
+							&nbsp;&nbsp;
+							<input name="websiteOperational" id="websiteOperationalNo" value="N" type="radio" aria-label="No">&nbsp;No</input>
+						</td>
+						<td><b>Call Answered?</b></td>
+						<td class="text-center">
+							<input name="callAnswered" id="callAnsweredYes" value="Y" type="radio" aria-label="Yes">&nbsp;Yes</input>
+							&nbsp;&nbsp;
+							<input name="callAnswered" id="callAnsweredNo" value="N" type="radio" aria-label="No">&nbsp;No</input>
+						</td>
+						<td><b>Need Reminder?</b></td>
+						<td class="text-center">
+							<input name="needReminder" id="needReminderYes" value="Y" type="radio" aria-label="Yes">&nbsp;Yes</input>
+							&nbsp;&nbsp;
+							<input name="needReminder" id="needReminderNo" value="N" type="radio" aria-label="No">&nbsp;No</input>
+						</td>
+						</div>
+						<td><b>Wish to Continue?</b></td>
+						<td class="text-center">
+							<input name="wishToContinue" id="wishToContinueYes" value="Y" type="radio" aria-label="Yes">&nbsp;Yes</input>
+							&nbsp;&nbsp;
+							<input name="wishToContinue" id="wishToContinueNo" value="N" type="radio" aria-label="No">&nbsp;No</input>
+						</td>
+					</tr>
+				</table>
+				<table id="appointmentDetails" class="table table-bordered bg-warning" style="display:none">	
+					<tr>
+						<td><b>Appointment time</b></td>
+						<td><input class="date" type="text" aria-label="..."></td>
+						<td><b>Additional Email Id</b></td>
+						<td><input type="text" aria-label="..."></td>
+						<td><b>Additional Phone 1</b></td>
+						<td><input type="text" aria-label="..."></td>
+						<td><b>Additional Phone 2</b></td>
+						<td><input type="text" aria-label="..."></td>
+					</tr>
+					<tr>
+						<td colspan="8"><b>Response Date</b>&nbsp;<input class="date" type="text" aria-label="..."></td>
+					</tr>
+				</table>
+				<table id="terminationDetails" class="table table-bordered bg-warning" style="display:none">	
+					<tr>
+						<td><h3><span class="label label-danger">Candidate For Termination</span></h3></td>
+					</tr>					
+				</table>
+				<table id="reminderDetails" class="table table-bordered bg-warning" style="display:none">	
+					<tr>
+						<td><h3><span class="label label-info">Reminder Details</span></h3><span class="glyphicon glyphicon-time"></span></td>
+					</tr>
+					<tr>
+						<td><input class="date" type="text" placeholder="Click to Select Date" readonly></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<!-- /.row -->
+		<div class="row" id="reasonsSectionWoy" style="display:none;">
+			<div class="text-center">
+			  <h3><span class="label label-default">Reasons to Discontinue</span></h3>
+			</div>		
+			<div id="questionaire" class="table-responsive col-lg-12">
+				<table class="table table-bordered bg-warning">
+					{%if reasonswoy%}
+						{%for i,reason in reasonswoy%}
+							{% if not i|divisibleby:"2"%}
+							<tr>
+							{% endif %}	
+								<td class="text-center" width="3%">
+									<input name="reasons" type="checkbox" value="{{reason.id}}">
+								</td>
+								<td><b>{{reason.reason}}</b></td>
+							{% if i|divisibleby:"2" %}	
+								</tr>		
+							{% endif %}	
+						{%endfor%}
+					{%endif%}
+					
+					<tr>
+						<td class="text-center" colspan="2">
+							<input type="text" class="form-control" placeholder="Type a New Reason...">
+						</td>
+						<td class="text-center" colspan="2">
+							<input type="text" class="form-control" placeholder="Type a New Reason...">
+						</td>
+						<!--
+						<td class="text-center" colspan="2">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Add a New Reason...">
+								<span class="input-group-btn">
+									<button class="btn btn-success" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+								</span>
+							</div>
+						</td>
+						-->
+					</tr>
+				</table>
+			</div>
+		</div>
+		<!-- /.row -->
+		<div class="row" id="reasonsSectionWon" style="display:none;">
+			<div class="text-center">
+			  <h3><span class="label label-default">Reasons to Discontinue</span></h3>
+			</div>		
+			<div id="questionaire" class="table-responsive col-lg-12">
+				<table class="table table-bordered bg-warning">
+					{%if reasonswon%}
+						{%for i,reason in reasonswon%}
+							{% if not i|divisibleby:"2"%}
+							<tr>
+							{% endif %}	
+								<td class="text-center" width="3%">
+									<input name="reasons" type="checkbox" value="{{reason.id}}">
+								</td>
+								<td><b>{{reason.reason}}</b></td>
+							{% if i|divisibleby:"2"%}	
+								</tr>		
+							{% endif %}	
+						{%endfor%}
+					{%endif%}
+					<tr>
+						<td class="text-center" colspan="2">
+							<input type="text" name="newReason1" class="form-control" placeholder="Type a New Reason...">
+						</td>
+						<td class="text-center" colspan="2">
+							<input type="text" name="newReason2" class="form-control" placeholder="Type a New Reason...">
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<!-- /.row -->
+		<div class="row">
+			<div class="text-center">
+				<button class="btn btn-success" type="button" id="dataSave"><span class="glyphicon glyphicon-floppy-save" title="Save"></span></button>
+			</div>
+		</div>
+		</form>
+		{%endif%}
+    </div>
+	
+    <!-- /.container -->
+
+    <!-- jQuery Version 1.11.1 -->		
+    <script src="{% static 'ClientVerificationApp/js/jquery.js' %}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'ClientVerificationApp/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'ClientVerificationApp/js/bootstrap-datepicker.js' %}"></script>
+	<script>
+		$(document).ready(function(){
+			
+			$('input[id=callAnsweredYes]').attr("disabled",true);
+			$('input[id=callAnsweredNo]').attr("disabled",true);
+			$('input[id=needReminderYes]').attr("disabled",true);
+			$('input[id=needReminderNo]').attr("disabled",true);
+			$('input[id=wishToContinueYes]').attr("disabled",true);
+			$('input[id=wishToContinueNo]').attr("disabled",true);
+			
+			/*$("#searchClientBtn").click(function(){
+				$("#clientDetailSection").show( "slow", function() {
+					// Animation complete.
+				});
+				$("#responseSection").show( "slow", function() {
+					// Animation complete.
+				});
+				//$("#reasonsSection").
+				
+			});
+			*/
+			
+			$("#needReminderYes").click(function(){
+				$("#reminderDetails").show( "slow", function() {
+					// Animation complete.
+				});
+			});
+			
+			$("#needReminderNo").click(function(){
+				$("#reminderDetails").hide( "slow", function() {
+					// Animation complete.
+				});
+			});
+			
+			$("#websiteOperationalYes,#websiteOperationalNo").click(function(){
+				$('input[id=callAnsweredYes]').attr("disabled",false);
+				$('input[id=callAnsweredNo]').attr("disabled",false);
+			});
+			
+			$("#websiteOperationalYes").click(function(){
+				$("#reasonsSectionWoy").show( "slow", function() {});
+				$("#reasonsSectionWon").hide( "slow", function() {});
+			});
+				
+			$("#websiteOperationalNo").click(function(){
+				$("#reasonsSectionWoy").hide( "slow", function() {});
+				$("#reasonsSectionWon").show( "slow", function() {});
+			});
+			
+			
+			$("#callAnsweredYes").click(function(){
+				if ($('#websiteOperationalYes').is(':checked')) {
+					$("#reasonsSectionWoy").show( "slow", function() {});
+					$("#reasonsSectionWon").hide( "slow", function() {});
+				}
+				if ($('#websiteOperationalNo').is(':checked')) {
+					$("#reasonsSectionWon").show( "slow", function() {});
+					$("#reasonsSectionWoy").hide( "slow", function() {});
+				}
+				$("#appointmentDetails").hide( "slow", function() {});
+				$("#terminationDetails").hide( "slow", function() {});
+				$("#reminderDetails").hide( "slow", function() {});
+				$('input[id=needReminderYes]').attr("disabled",true);
+				$('input[id=needReminderNo]').attr("disabled",true);
+				$('input[id=wishToContinueYes]').attr("disabled",false);
+				$('input[id=wishToContinueNo]').attr("disabled",false);
+			});
+			
+			$("#callAnsweredNo").click(function(){
+				$("#reasonsSectionWoy").hide( "slow", function() {});
+				$("#reasonsSectionWon").hide( "slow", function() {});
+				$("#reminderDetails").hide( "slow", function() {});
+				$("#appointmentDetails").hide( "slow", function() {});
+				$("#terminationDetails").hide( "slow", function() {});
+				$('input[id=needReminderYes]').attr("disabled",false);
+				$('input[id=needReminderNo]').attr("disabled",false);
+				$('input[id=wishToContinueYes]').attr("disabled",true);
+				$('input[id=wishToContinueNo]').attr("disabled",true);
+			});
+			
+			$("#wishToContinueYes").click(function(){
+				$("#appointmentDetails").show( "slow", function() {});
+				$("#terminationDetails").hide( "slow", function() {});
+			});
+			
+			$("#wishToContinueNo").click(function(){
+				$("#appointmentDetails").hide( "slow", function() {});
+				$("#terminationDetails").show( "slow", function() {});
+			});
+			
+			$("#terminationInitiation").click(function(){
+				alert('Termination Initiated');
+			});
+			
+			$('.date').datepicker({
+				autoclose: true,
+				todayHighlight: true
+			});
+			if($('#hdnAccountId').val() > 0){
+				$("#clientDetailSection").show( "slow", function() {
+					// Animation complete.
+				});
+				$("#responseSection").show( "slow", function() {
+					// Animation complete.
+				});
+			}			
+		});
+	</script>
+</body>
+
+</html>
